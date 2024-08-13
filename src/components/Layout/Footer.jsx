@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Box, Typography, Container, Link } from "@mui/material";
 
 function Copyright(props) {
@@ -19,7 +19,7 @@ function Copyright(props) {
 	);
 }
 
-export default function StickyFooter() {
+export default function Footer() {
 	return (
 		<Box
 			sx={{

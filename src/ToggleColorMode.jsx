@@ -1,11 +1,9 @@
-import * as React from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { Box } from "@mui/system";
-
-import IconButton from "@mui/material/IconButton";
-
-import ModeNightRoundedIcon from "@mui/icons-material/ModeNightRounded";
+import { Switch } from "@mui/material";
 import WbSunnyRoundedIcon from "@mui/icons-material/WbSunnyRounded";
+import ModeNightRoundedIcon from "@mui/icons-material/ModeNightRounded";
 
 function ToggleColorMode({ mode, toggleColorMode, ...props }) {
 	return (
@@ -14,20 +12,12 @@ function ToggleColorMode({ mode, toggleColorMode, ...props }) {
 				display: "flex",
 				justifyContent: "flex-end",
 				width: "100%",
+				alignItems: "center",
 			}}
 		>
-			<IconButton
-				onClick={toggleColorMode}
-				color="primary"
-				aria-label="Theme toggle button"
-				{...props}
-			>
-				{mode === "dark" ? (
-					<WbSunnyRoundedIcon fontSize="small" />
-				) : (
-					<ModeNightRoundedIcon fontSize="small" />
-				)}
-			</IconButton>
+			<ModeNightRoundedIcon />
+			<Switch checked={mode === "dark"} onChange={toggleColorMode} color="default" {...props} />
+			<WbSunnyRoundedIcon />
 		</Box>
 	);
 }

@@ -242,7 +242,7 @@ export default function getSignInTheme(mode) {
 									variant: "contained",
 								},
 								style: {
-									color: "white",
+									color: "#FFFFFF",
 									backgroundColor: brand[300],
 									backgroundImage: `linear-gradient(to bottom, ${alpha(brand[400], 0.8)}, ${
 										brand[500]
@@ -445,7 +445,7 @@ export default function getSignInTheme(mode) {
 							borderColor: brand[400],
 						},
 						"&.Mui-checked": {
-							color: "white",
+							color: "#FFFFFF",
 							backgroundColor: brand[500],
 							borderColor: brand[500],
 							boxShadow: `none`,
