@@ -41,8 +41,11 @@ export const performLogin = (username, password) => async (dispatch) => {
 
 export const loadCurrentUser = () => async (dispatch) => {
 	try {
-		const user = await fetchCurrentUser();
-		dispatch(loginSuccess({ token: localStorage.getItem("access_token"), user }));
+		const token = localStorage.getItem("access_token");
+		if (token) {
+			const user = await fetchCurrentUser();
+			dispatch(loginSuccess({ token, user }));
+		}
 	} catch (error) {
 		console.error("Failed to fetch user:", error);
 		throw error;

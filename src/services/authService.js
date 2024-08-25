@@ -7,10 +7,10 @@ export const login = async (username, password) => {
 	formData.append("username", username);
 	formData.append("password", password);
 
-	console.log(`${API_URL}/server/auth/login/`);
+	console.log(`${API_URL}/auth/login/`);
 	console.log(`FormData: ${formData}`);
 
-	const response = await axios.post(`${API_URL}/server/auth/login/`, formData, {
+	const response = await axios.post(`${API_URL}/auth/login/`, formData, {
 		headers: { "Content-Type": "application/x-www-form-urlencoded" },
 	});
 
@@ -26,7 +26,7 @@ export const login = async (username, password) => {
 export const fetchCurrentUser = async () => {
 	const token = localStorage.getItem("access_token");
 	console.log(`token: ${token}`);
-	const response = await axios.get(`${API_URL}/server/auth/me/`, {
+	const response = await axios.get(`${API_URL}/auth/me/`, {
 		headers: { Authorization: `Bearer ${token}` },
 	});
 	console.log(`response /me/: ${response}`);
@@ -35,5 +35,16 @@ export const fetchCurrentUser = async () => {
 		return response.data;
 	} else {
 		throw new Error("Falha ao buscar usuário");
+	}
+};
+
+export const recoverPassword = async (email) => {
+	const response = await axios.post(`${API_URL}/user/recover-password/`, { email });
+	console.log(`response recover-password: ${response}`);
+
+	if (response.status === 200) {
+		return response.data;
+	} else {
+		throw new Error("Falha ao recuperar senha");
 	}
 };

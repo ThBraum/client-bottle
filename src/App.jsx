@@ -1,17 +1,21 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom"; // Import the Navigate component
-import Footer from "./components/Layout/Footer";
+import React, { useEffect } from "react";
 import { ThemeProvider, createTheme, CssBaseline, Box } from "@mui/material";
-import SignIn from "./pages/auth/SignIn";
-import PrivateRoutes from "./routes/PrivateRoutes";
-import UserInfo from "./pages/auth/UserInfo";
+import AppRoutes from "routes/AppRoutes";
+import Footer from "components/Layout/Footer";
+import { useDispatch } from "react-redux";
+import { loadCurrentUser } from "reduxStore/slices/authSlice";
 
 function App() {
+	const dispatch = useDispatch();
 	const [mode, setMode] = React.useState("dark");
 
 	const handleThemeChange = (event) => {
 		setMode(event.target.checked ? "dark" : "light");
 	};
+
+	useEffect(() => {
+		dispatch(loadCurrentUser()); // Carrega o estado de autenticação ao iniciar a aplicação
+	}, [dispatch]);
 
 	const theme = createTheme({
 		palette: {
@@ -30,22 +34,7 @@ function App() {
 					backgroundColor: theme.palette.background.default,
 				}}
 			>
-				<Routes>
-					{/* Rota de login */}
-					<Route
-						path="/login"
-						element={<SignIn mode={mode} toggleColorMode={handleThemeChange} />}
-					/>
-
-					{/* Rotas protegidas */}
-					<Route element={<PrivateRoutes />}>
-						<Route path="/" element={<Navigate to="/login" />} />
-						<Route path="/user-info" element={<UserInfo />} />
-					</Route>
-
-					{/* Redirecionamento de rotas desconhecidas para login */}
-					<Route path="*" element={<Navigate to="/login" />} />
-				</Routes>
+				<AppRoutes mode={mode} toggleColorMode={handleThemeChange} />
 				<Footer />
 			</Box>
 		</ThemeProvider>

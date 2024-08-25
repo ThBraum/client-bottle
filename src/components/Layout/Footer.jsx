@@ -22,27 +22,18 @@ function Copyright(props) {
 export default function Footer() {
 	return (
 		<Box
+			component="footer"
 			sx={{
-				display: "flex",
-				flexDirection: "column",
+				py: 3,
+				px: 2,
+				mt: "auto",
+				width: "100%",
+				backgroundColor: (theme) => (theme.palette.mode === "dark" ? "#17212e" : "#e0e0e0"),
 			}}
 		>
-			<Box
-				component="footer"
-				sx={{
-					py: 3,
-					px: 2,
-					mt: "auto",
-					position: "fixed",
-					bottom: 0,
-					width: "100%",
-					backgroundColor: (theme) => (theme.palette.mode === "dark" ? "#17212e" : "#e0e0e0"),
-				}}
-			>
-				<Container maxWidth="sm">
-					<Copyright />
-				</Container>
-			</Box>
+			<Container maxWidth="sm">
+				<Copyright />
+			</Container>
 		</Box>
 	);
 }

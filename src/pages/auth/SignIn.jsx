@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Stack, Box, Avatar, Typography, Card } from "@mui/material";
@@ -10,6 +10,7 @@ import MaterialUISwitch from "../../components/Common/MaterialUISwitch";
 import getSignInTheme from "../../getSignInTheme";
 import { loginSuccess } from "../../reduxStore/slices/authSlice";
 import { login, fetchCurrentUser } from "../../services/authService";
+import CustomSnackbar from "../../components/Common/CustomSnackbar";
 
 const SignInContainer = styled(Stack)(({ theme }) => ({
 	height: "100vh",
@@ -50,12 +51,20 @@ function SignIn({ mode, toggleColorMode }) {
 	const dispatch = useDispatch();
 	const SignInTheme = createTheme(getSignInTheme(mode));
 
+	const [snackbarOpen, setSnackbarOpen] = useState(false);
+	const [snackbarMessage, setSnackbarMessage] = useState("");
+	const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+	const handleSnackbarClose = () => {
+		setSnackbarOpen(false);
+	};
+
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		const data = new FormData(event.currentTarget);
 
 		try {
-			const authData = await login(data.get("email"), data.get("password"));
+			const authData = await login(data.get("emailOrUsername"), data.get("password"));
 			dispatch(loginSuccess({ token: authData.access_token, user: authData.user }));
 			localStorage.setItem("access_token", authData.access_token);
 
@@ -64,9 +73,17 @@ function SignIn({ mode, toggleColorMode }) {
 
 			console.log(`Role: ${currentUser.role}`);
 
-			navigate("/user-info");
+			setSnackbarMessage("Login realizado com sucesso!");
+			setSnackbarSeverity("success");
+			setSnackbarOpen(true);
+
+			navigate("/transactions");
 		} catch (error) {
-			console.error("Falha na autenticação:", error);
+			const errorMessage = error.response?.data || "Falha na autenticação. Tente novamente.";
+			console.log(errorMessage);
+			setSnackbarMessage(errorMessage);
+			setSnackbarSeverity("error");
+			setSnackbarOpen(true);
 		}
 	};
 
@@ -109,7 +126,14 @@ function SignIn({ mode, toggleColorMode }) {
 						<SignInForm handleSubmit={handleSubmit} />
 					</StyledCard>
 				</Stack>
-				<StickyFooter />
+				{/* <StickyFooter /> */}
+				<CustomSnackbar
+					open={snackbarOpen}
+					message={snackbarMessage}
+					severity={snackbarSeverity}
+					onClose={handleSnackbarClose}
+					autoHideDuration={2500}
+				/>
 			</SignInContainer>
 		</ThemeProvider>
 	);

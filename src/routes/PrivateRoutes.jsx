@@ -1,25 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { loadCurrentUser } from "../reduxStore/slices/authSlice";
 import { Snackbar } from "@mui/material";
 
 const PrivateRoutes = () => {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-	// console.log("isAuthenticated: ", isAuthenticated);
+	const dispatch = useDispatch();
+	const token = localStorage.getItem("access_token");
+
+	useEffect(() => {
+		if (token && !isAuthenticated) {
+			// Se o token existe, mas o usuário não está autenticado, carregar o usuário
+			dispatch(loadCurrentUser());
+		}
+	}, [token, isAuthenticated, dispatch]);
 
 	const [openSnackbar, setOpenSnackbar] = useState(false);
 
 	useEffect(() => {
-		if (!isAuthenticated) {
+		if (!isAuthenticated && !token) {
 			setOpenSnackbar(true);
 		}
-	}, [isAuthenticated]);
+	}, [isAuthenticated, token]);
 
 	const handleSnackbarClose = () => {
 		setOpenSnackbar(false);
 	};
 
-	if (!isAuthenticated) {
+	if (!isAuthenticated && !token) {
 		return (
 			<>
 				<Navigate to="/login" />

@@ -1,57 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-	Avatar,
 	Box,
 	Button,
 	FormControl,
 	FormLabel,
 	Link,
 	TextField,
-	Typography,
 	InputAdornment,
 	IconButton,
+	Tooltip,
 } from "@mui/material";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import MailIcon from "@mui/icons-material/Mail";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import MailIcon from "@mui/icons-material/Mail";
 import PropTypes from "prop-types";
 import ForgotPassword from "./ForgotPassword";
 
 function SignInForm({ handleSubmit }) {
-	const [emailError, setEmailError] = useState(false);
-	const [emailErrorMessage, setEmailErrorMessage] = useState("");
+	const [emailOrUsername, setEmailOrUsername] = useState("");
+	const [password, setPassword] = useState("");
 	const [passwordError, setPasswordError] = useState(false);
 	const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
 	const [open, setOpen] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
+	const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
-	const handleClickOpen = () => setOpen(true);
+	const handleClickOpen = (e) => {
+		e.preventDefault();
+		setPasswordError(false);
+		setPasswordErrorMessage("");
+		setOpen(true);
+	};
+
 	const handleClose = () => setOpen(false);
 
 	const validateInputs = () => {
-		const email = document.getElementById("email");
-		const password = document.getElementById("password");
-
 		let isValid = true;
 
-		// if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-		// 	setEmailError(true);
-		// 	setEmailErrorMessage("Please enter a valid email address.");
-		// 	isValid = false;
-		// } else {
-		// 	setEmailError(false);
-		// 	setEmailErrorMessage("");
-		// }
-
-		// if (!password.value || password.value.length < 3) {
-		// 	setPasswordError(true);
-		// 	setPasswordErrorMessage("Password must be at least 6 characters long.");
-		// 	isValid = false;
-		// } else {
-		// 	setPasswordError(false);
-		// 	setPasswordErrorMessage("");
-		// }
+		if (!password || password.length < 6) {
+			setPasswordError(true);
+			setPasswordErrorMessage("A senha deve ter pelo menos 6 caracteres.");
+			isValid = false;
+		} else {
+			setPasswordError(false);
+			setPasswordErrorMessage("");
+		}
 
 		return isValid;
 	};
@@ -60,42 +53,49 @@ function SignInForm({ handleSubmit }) {
 		setShowPassword((prev) => !prev);
 	};
 
+	const handleLoginSubmit = (e) => {
+		e.preventDefault();
+		if (validateInputs()) {
+			handleSubmit(e);
+		}
+	};
+
+	useEffect(() => {
+		if (emailOrUsername.trim() && password.trim()) {
+			setIsButtonDisabled(false);
+		} else {
+			setIsButtonDisabled(true);
+		}
+	}, [emailOrUsername, password]);
+
 	return (
 		<Box
 			component="form"
-			onSubmit={handleSubmit}
+			onSubmit={handleLoginSubmit}
 			noValidate
-			sx={{
-				display: "flex",
-				flexDirection: "column",
-				width: "100%",
-				gap: 2,
-			}}
+			sx={{ display: "flex", flexDirection: "column", width: "100%", gap: 2 }}
 		>
 			<FormControl>
 				<FormLabel
-					htmlFor="email"
+					htmlFor="emailOrUsername"
 					sx={{ fontSize: "0.99rem", display: "flex", alignItems: "center" }}
 				>
 					Email ou username
 				</FormLabel>
 				<TextField
-					error={emailError}
-					helperText={emailErrorMessage}
-					id="email"
-					type="email"
-					name="email"
+					id="emailOrUsername"
+					name="emailOrUsername"
 					placeholder="example@email.com"
-					autoComplete="email"
 					autoFocus
 					required
 					fullWidth
 					variant="outlined"
-					color={emailError ? "error" : "primary"}
+					value={emailOrUsername}
+					onChange={(e) => setEmailOrUsername(e.target.value)}
 					InputProps={{
 						endAdornment: (
 							<InputAdornment position="end">
-								<IconButton edge="end" aria-label="email icon">
+								<IconButton edge="end" aria-label="email or username icon">
 									<MailIcon />
 								</IconButton>
 							</InputAdornment>
@@ -103,7 +103,7 @@ function SignInForm({ handleSubmit }) {
 					}}
 				/>
 			</FormControl>
-			<FormControl>
+			<FormControl error={passwordError}>
 				<Box sx={{ display: "flex", justifyContent: "space-between" }}>
 					<FormLabel htmlFor="password" sx={{ fontSize: "0.99rem" }}>
 						Senha
@@ -120,7 +120,8 @@ function SignInForm({ handleSubmit }) {
 					required
 					fullWidth
 					variant="outlined"
-					color={passwordError ? "error" : "primary"}
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
 					InputProps={{
 						endAdornment: (
 							<InputAdornment position="end">
@@ -145,15 +146,24 @@ function SignInForm({ handleSubmit }) {
 				Esqueceu a senha?
 			</Link>
 			<ForgotPassword open={open} handleClose={handleClose} />
-			<Button
-				type="submit"
-				fullWidth
-				variant="contained"
-				onClick={validateInputs}
-				sx={{ marginTop: 3 }}
+			<Tooltip
+				title={
+					isButtonDisabled ? "Preencha o email ou username e a senha para habilitar o login" : ""
+				}
+				disableHoverListener={!isButtonDisabled}
 			>
-				LOGIN
-			</Button>
+				<span>
+					<Button
+						type="submit"
+						fullWidth
+						variant="contained"
+						disabled={isButtonDisabled}
+						sx={{ marginTop: 3 }}
+					>
+						LOGIN
+					</Button>
+				</span>
+			</Tooltip>
 		</Box>
 	);
 }
