@@ -26,14 +26,21 @@ export const login = async (username, password) => {
 export const fetchCurrentUser = async () => {
 	const token = localStorage.getItem("access_token");
 	console.log(`token: ${token}`);
-	const response = await axios.get(`${API_URL}/auth/me/`, {
-		headers: { Authorization: `Bearer ${token}` },
-	});
-	console.log(`response /me/: ${response}`);
 
-	if (response.status === 200) {
-		return response.data;
-	} else {
+	try {
+		const response = await axios.get(`${API_URL}/auth/me/`, {
+			headers: { Authorization: `Bearer ${token}` },
+		});
+		console.log(`response /me/: ${response}`);
+
+		if (response.status === 200) {
+			return response.data;
+		}
+	} catch (error) {
+		if (error.response && error.response.status === 401) {
+			console.error("Token expirado ou inválido, redirecionando para login...");
+			return null;
+		}
 		throw new Error("Falha ao buscar usuário");
 	}
 };

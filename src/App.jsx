@@ -4,10 +4,12 @@ import AppRoutes from "routes/AppRoutes";
 import Footer from "components/Layout/Footer";
 import { useDispatch } from "react-redux";
 import { loadCurrentUser } from "reduxStore/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 function App() {
 	const dispatch = useDispatch();
 	const [mode, setMode] = React.useState("dark");
+	const navigate = useNavigate();
 
 	const handleThemeChange = (event) => {
 		setMode(event.target.checked ? "dark" : "light");
